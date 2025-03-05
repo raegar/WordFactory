@@ -6,6 +6,8 @@ public class WordManager : MonoBehaviour
     public static WordManager Instance;
     public List<string> validDictionary; // In the future load this from a file/resource.
     public HashSet<string> discoveredWords = new HashSet<string>();
+    public IWordValidator WordValidator { get; set; } = new BasicWordValidator();
+
 
     private void Awake()
     {
@@ -17,7 +19,6 @@ public class WordManager : MonoBehaviour
     public void SubmitWord()
     {
         string word = WordRack.Instance.GetFormedWord().ToUpper();
-
         if (discoveredWords.Contains(word))
         {
             Debug.Log("Word already submitted.");
@@ -25,13 +26,12 @@ public class WordManager : MonoBehaviour
             return;
         }
 
-        if (validDictionary.Contains(word))
+        if (WordValidator.IsValidWord(word))
         {
             discoveredWords.Add(word);
             long reward = CalculateReward(word);
             GameManager.Instance.AddMoney(reward);
 
-            // Correct word: destroy the letters and clear the rack.
             foreach (var letter in WordRack.Instance.currentLetters)
             {
                 Destroy(letter.gameObject);
@@ -45,6 +45,7 @@ public class WordManager : MonoBehaviour
             ClearRack();
         }
     }
+
 
     private void ClearRack()
     {
