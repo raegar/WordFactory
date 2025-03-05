@@ -8,6 +8,9 @@ public class WordManager : MonoBehaviour
     public HashSet<string> discoveredWords = new HashSet<string>();
     public IWordValidator WordValidator { get; set; } = new BasicWordValidator();
 
+    public delegate void WordSubmittedHandler();
+    public event WordSubmittedHandler OnWordSubmitted;
+
 
     private void Awake()
     {
@@ -26,7 +29,7 @@ public class WordManager : MonoBehaviour
             return;
         }
 
-        if (WordValidator.IsValidWord(word))
+        if (validDictionary.Contains(word))
         {
             discoveredWords.Add(word);
             long reward = CalculateReward(word);
@@ -38,6 +41,8 @@ public class WordManager : MonoBehaviour
             }
             WordRack.Instance.ClearRack();
             Debug.Log("Submitted word: " + word + " | Reward: £" + reward);
+
+            OnWordSubmitted?.Invoke();
         }
         else
         {
