@@ -14,7 +14,7 @@ public class LetterSpawner : MonoBehaviour
     {
         // Default strategy using the default letter pool.
         if (letterSelectionStrategy == null)
-            letterSelectionStrategy = new RandomLetterStrategy(new string[] { "A", "B", "C", "D", "E" });
+            letterSelectionStrategy = new RandomLetterStrategy(new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" });
     }
 
     private void Update()
