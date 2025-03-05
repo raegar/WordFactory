@@ -7,8 +7,8 @@ public class KillZone : MonoBehaviour
         // Check if the object is a letter ball by its tag.
         if (other.CompareTag("LetterBall"))
         {
-            Debug.Log("Letter ball has fallen off the screen and will be removed.");
-            Destroy(other.gameObject);
+            Debug.Log("Letter ball has fallen off the screen and will be returned to the pool.");
+            ObjectPool.Instance.ReturnObject(other.gameObject);
         }
     }
 }

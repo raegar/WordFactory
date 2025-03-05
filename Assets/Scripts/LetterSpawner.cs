@@ -32,7 +32,8 @@ public class LetterSpawner : MonoBehaviour
         string letter = letterSelectionStrategy.GetLetter();
         Vector3 spawnPos = transform.position;
         spawnPos.x += Random.Range(-2f, 2f);
-        GameObject letterBall = Instantiate(letterBallPrefab, spawnPos, Quaternion.identity);
+        GameObject letterBall = ObjectPool.Instance.GetObject(spawnPos, Quaternion.identity);
         letterBall.GetComponent<LetterBall>().SetLetter(letter);
     }
+
 }

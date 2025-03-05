@@ -17,6 +17,20 @@ public class LetterBall : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
             originalGravityScale = rb.gravityScale;
     }
 
+    // This method is called every time the object is activated.
+    private void OnEnable()
+    {
+        // Re-enable physics by ensuring simulation is on and resetting velocities.
+        if (rb != null)
+        {
+            rb.simulated = true;
+            rb.isKinematic = false;
+            rb.gravityScale = originalGravityScale;
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+    }
+
     public void SetLetter(string newLetter)
     {
         letter = newLetter;
@@ -26,7 +40,6 @@ public class LetterBall : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        // Disable gravity while dragging.
         if (rb != null)
         {
             rb.gravityScale = 0;
@@ -36,7 +49,6 @@ public class LetterBall : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     public void OnDrag(PointerEventData eventData)
     {
-        // Convert screen position to world position.
         Vector3 screenPosition = eventData.position;
         screenPosition.z = Camera.main.WorldToScreenPoint(transform.position).z;
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
@@ -45,16 +57,13 @@ public class LetterBall : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        // Check if the letter ball is over the rack based on its world position.
         if (WordRack.Instance != null && WordRack.Instance.IsOverRack(transform.position))
         {
             WordRack.Instance.AddLetter(this);
         }
-        else
+        else if (rb != null)
         {
-            // Re-enable gravity if not dropped on the rack.
-            if (rb != null)
-                rb.gravityScale = originalGravityScale;
+            rb.gravityScale = originalGravityScale;
         }
     }
 }
