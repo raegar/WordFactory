@@ -1,20 +1,20 @@
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
-    public TextMeshProUGUI moneyText; 
+    public TextMeshProUGUI moneyText;
 
     private void Awake()
     {
-        Instance = this; 
+        Instance = this;
     }
 
     private void Start()
     {
-        UpdateMoneyDisplay(0);
+        GameManager.Instance.OnMoneyChanged += UpdateMoneyDisplay;
+        UpdateMoneyDisplay(GameManager.Instance.currentMoney);
     }
 
     public void UpdateMoneyDisplay(long currentMoney)

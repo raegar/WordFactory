@@ -6,6 +6,9 @@ public class GameManager : MonoBehaviour
     public long currentMoney = 0;
     public long targetMoney = 1000000000; // £1B goal
 
+    public delegate void MoneyChanged(long newMoney);
+    public event MoneyChanged OnMoneyChanged;
+
     private void Awake()
     {
         if (Instance == null)
@@ -17,7 +20,7 @@ public class GameManager : MonoBehaviour
     public void AddMoney(long amount)
     {
         currentMoney += amount;
-        UIManager.Instance.UpdateMoneyDisplay(currentMoney);
+        OnMoneyChanged?.Invoke(currentMoney);
         CheckProgression();
     }
 
