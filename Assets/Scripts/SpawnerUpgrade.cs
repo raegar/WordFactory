@@ -33,7 +33,7 @@ public class SpawnerUpgrade : MonoBehaviour
         switch (spawnerType)
         {
             case SpawnerType.Vowel:
-                spawner.letterPool = new string[] { "A", "E", "I", "O", "U" };
+                spawner.letterSelectionStrategy = new VowelLetterStrategy();
                 break;
                 // Add additional cases for each spawner type.
         }

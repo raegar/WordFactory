@@ -4,11 +4,20 @@ public class LetterSpawner : MonoBehaviour
 {
     public float spawnInterval = 3f;
     public GameObject letterBallPrefab;
-    public string[] letterPool = { "A", "B", "C", "D", "E" }; // Default letters
+
+    // Instead of a hardcoded array, we inject a strategy.
+    public ILetterSelectionStrategy letterSelectionStrategy;
 
     private float timer;
 
-    void Update()
+    private void Awake()
+    {
+        // Default strategy using the default letter pool.
+        if (letterSelectionStrategy == null)
+            letterSelectionStrategy = new RandomLetterStrategy(new string[] { "A", "B", "C", "D", "E" });
+    }
+
+    private void Update()
     {
         timer += Time.deltaTime;
         if (timer >= spawnInterval)
@@ -18,16 +27,12 @@ public class LetterSpawner : MonoBehaviour
         }
     }
 
-    void SpawnLetter()
+    private void SpawnLetter()
     {
-        // Pick a random letter from the pool.
-        int index = Random.Range(0, letterPool.Length);
-        string letter = letterPool[index];
-
-        // Instantiate the letter ball at the spawner's position.
-        Vector3 spawPos = transform.position;
-        spawPos.x += Random.Range(-2f, 2f);
-        GameObject letterBall = Instantiate(letterBallPrefab, spawPos, Quaternion.identity);
+        string letter = letterSelectionStrategy.GetLetter();
+        Vector3 spawnPos = transform.position;
+        spawnPos.x += Random.Range(-2f, 2f);
+        GameObject letterBall = Instantiate(letterBallPrefab, spawnPos, Quaternion.identity);
         letterBall.GetComponent<LetterBall>().SetLetter(letter);
     }
 }
