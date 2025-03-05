@@ -14,9 +14,7 @@ public class LetterBall : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     {
         rb = GetComponent<Rigidbody2D>();
         if (rb != null)
-        {
             originalGravityScale = rb.gravityScale;
-        }
     }
 
     public void SetLetter(string newLetter)
@@ -28,17 +26,17 @@ public class LetterBall : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        // Disable gravity while dragging to prevent the ball from falling.
+        // Disable gravity while dragging.
         if (rb != null)
         {
             rb.gravityScale = 0;
-            rb.velocity = Vector2.zero; // Stop any ongoing movement.
+            rb.velocity = Vector2.zero;
         }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        // Convert the pointer's screen position to a world position.
+        // Convert screen position to world position.
         Vector3 screenPosition = eventData.position;
         screenPosition.z = Camera.main.WorldToScreenPoint(transform.position).z;
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
@@ -47,10 +45,16 @@ public class LetterBall : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        // Re-enable gravity once dragging is finished.
-        if (rb != null)
+        // Check if the letter ball is over the rack based on its world position.
+        if (WordRack.Instance != null && WordRack.Instance.IsOverRack(transform.position))
         {
-            rb.gravityScale = originalGravityScale;
+            WordRack.Instance.AddLetter(this);
+        }
+        else
+        {
+            // Re-enable gravity if not dropped on the rack.
+            if (rb != null)
+                rb.gravityScale = originalGravityScale;
         }
     }
 }

@@ -14,34 +14,67 @@ public class WordManager : MonoBehaviour
         validDictionary = new List<string> { "HELLO", "WORLD", "UNITY", "GAME" };
     }
 
-    public bool SubmitWord()
+    public void SubmitWord()
     {
         string word = WordRack.Instance.GetFormedWord().ToUpper();
+
         if (discoveredWords.Contains(word))
         {
             Debug.Log("Word already submitted.");
-            return false;
+            ClearRack();
+            return;
         }
+
         if (validDictionary.Contains(word))
         {
             discoveredWords.Add(word);
             long reward = CalculateReward(word);
             GameManager.Instance.AddMoney(reward);
 
-            // Remove or destroy used letter balls.
+            // Correct word: destroy the letters and clear the rack.
             foreach (var letter in WordRack.Instance.currentLetters)
             {
                 Destroy(letter.gameObject);
             }
             WordRack.Instance.ClearRack();
-            return true;
+            Debug.Log("Submitted word: " + word + " | Reward: £" + reward);
         }
         else
         {
-            Debug.Log("Invalid word.");
-            return false;
+            Debug.Log("Invalid word: " + word);
+            ClearRack();
         }
     }
+
+    private void ClearRack()
+    {
+        // For an invalid word, unparent the letters so they can fall off.
+        foreach (var letter in WordRack.Instance.currentLetters)
+        {
+            // Unparent so the letter is free in the scene.
+            letter.transform.SetParent(null);
+            Rigidbody2D rb = letter.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                // Re-enable physics.
+                rb.simulated = true;
+                rb.isKinematic = false;
+
+                // Apply a downward force.
+                rb.AddForce(Vector2.down * 5f + Vector2.left * (Random.Range(-1f, 1f)), ForceMode2D.Impulse);
+
+                // Apply a small random torque (spin).
+                float randomTorque = Random.Range(-1f, 1f); // Adjust range as needed.
+                rb.AddTorque(randomTorque, ForceMode2D.Impulse);
+            }
+        }
+
+
+        // Finally, clear the rack's letter list.
+        WordRack.Instance.ClearRack();
+    }
+
+
 
     long CalculateReward(string word)
     {
